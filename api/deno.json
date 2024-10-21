@@ -1,5 +1,9 @@
 {
   "tasks": {
     "dev": "deno run --watch --allow-read --allow-net main.ts"
+  },
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   }
 }

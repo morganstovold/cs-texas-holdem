@@ -1,20 +1,16 @@
-import { serve } from "https://deno.land/std@0.150.0/http/server.ts";
-import { Server } from "https://deno.land/x/socket_io@0.1.1/mod.ts";
+import { Application, Context, Router } from 'jsr:@oak/oak';
+import ServerController from './controllers/server.controller.ts';
 
-const io = new Server();
+const app = new Application();
+const port = 8080;
+const router = new Router();
 
-async function main() {
-  const controllerFiles = await Deno.readDir("./controllers");
-  for await (const file of controllerFiles) {
-    if (file.isFile && file.name.endsWith(".ts")) {
-      const controller = await import(`./controllers/${file.name}`);
-      controller.default(io);
-    }
-  }
-}
+const server = new ServerController();
 
-main();
+router.get('/ws', (ctx: Context) => server.handleConnection(ctx));
 
-await serve(io.handler(), {
-  port: 3000,
-});
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.log(`Listening at http://localhost:${port}`);
+await app.listen({ port });
